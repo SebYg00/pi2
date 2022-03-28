@@ -1,0 +1,47 @@
+{% extends "base.html" %} 
+
+{% block title %}
+info
+{% endblock %}
+
+{% block content %}
+<html>
+    <table id="data" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Company Ticker</th>
+                <th>Price</th>
+                <th>Market Cap</th>
+                <th>Enterprise Value</th>
+                <th>P/E</th>
+                <th>Next 5 Years (per annum)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in range(companies.shape[0]) %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('auth.infoCompany', name=companies.iloc[i]['Company Ticker']) }}">{{ companies.iloc[i]['Company Ticker'] }}</a>
+                    </td>
+                    <td>
+                        {{ companies.iloc[i]['Price'] }}
+                    </td>
+                    <td>
+                        {{ companies.iloc[i]['Market Cap'] }}
+                    </td>
+                    <td>
+                        {{ companies.iloc[i]['Enterprise Value'] }}
+                    </td>
+                    <td>
+                        {{ companies.iloc[i]['P/E'] }}
+                    </td>
+                    <td>
+                        {{ companies.iloc[i]['Next 5 Years (per annum)'] }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</html>
+
+{% endblock %}

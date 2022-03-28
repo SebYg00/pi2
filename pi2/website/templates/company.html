@@ -1,0 +1,39 @@
+{% extends "base.html" %} 
+
+{% block title %}
+infoCompany
+{% endblock %}
+
+{% block content %}
+<html>
+    <table id="data" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>DCF method</th>
+                <th>Entreprise value method</th>
+                <th>Gorden Shapiro Method</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>
+                        {{ company['Ticker'].values[0] }}
+                    </td>
+                    <td>
+                        {{ company['DCF method'].values[0] }}
+                    </td>
+                    <td>
+                        {{ company['Entreprise value method'].values[0] }}
+                    </td>
+                    <td>
+                        {{ company['Gorden Shapiro Method'].values[0] }}
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+
+    <img src="https://www.macrotrends.net/assets/images/large/dow-jones-industrial-average-last-10-years.png" alt="graph" width="1300" height="500">
+</html>
+
+{% endblock %}

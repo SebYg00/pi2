@@ -1,0 +1,23 @@
+{% extends "base.html" %} 
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+<form class="form-inline" method="POST" action="{{ url_for('auth.info') }}">
+  <div class="form-group">
+    <div class="input-group">
+      <select name="selector" class="selectpicker form-control">
+        <option value="Communication Services">Communication Services</option>
+        <option value="Utilities">Utilities</option>
+        <option value="Energy">Energy</option>
+        <option value="Financial Services">Financial Services</option>
+        <option value="Healthcare">Healthcare</option>
+        <option value="Real Estate">Real Estate</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-default">Search</button>
+  </div>
+</form>
+{% endblock %}

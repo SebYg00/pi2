@@ -1,0 +1,169 @@
+{% extends "base.html" %} 
+
+{% block title %}
+about
+{% endblock %}
+
+{% block content %}
+<body>
+  <pre>
+    <h3>main.py</h3>
+    <code>
+      from website import create_app
+      import flask
+
+      app = create_app()
+
+      if __name__ == '__main__':
+        pp.run(debug=True)=True)
+    </code>
+
+    <h3>views.py</h3>
+    <code>
+      from flask import Blueprint, render_template, request
+      import yahoo_fin.stock_info as yf
+      import pandas as pd
+      import numpy as np
+      from sklearn import preprocessing as pp
+      
+      
+      views = Blueprint('views', __name__)
+      
+      @views.route('/')
+      def home():
+        return render_template('home.html')
+        #return render_template('home.html', companies = CompAnalysis("restaurants"))
+    </code>
+
+    <h3>auth.py</h3>
+    <code>
+      from crypt import methods
+      from flask import Blueprint, render_template, request
+      from soupsieve import match
+      import yahoo_fin.stock_info as yf
+      import pandas as pd
+      import numpy as np
+      from sklearn import preprocessing as pp
+      auth = Blueprint('auth', __name__)
+      
+      dico_secteurs = {}
+      
+      
+      liste_distribution = ["amzn","wmt","ebay","etsy","hd"]
+      liste_restaurants = ["sbux","mcd","yum","cmg"]
+      
+      dico_secteurs["distribution"] = liste_distribution
+      dico_secteurs["restaurants"] = liste_restaurants
+      
+      
+      
+      def CompAnalysis(sector):
+        comp_list = dico_secteurs[sector]
+      
+        comp_stats = {}
+        for ticker in comp_list:
+            temp = yf.get_stats_valuation(ticker)
+            temp = temp.iloc[:,:2]
+            temp.columns = ["Attribute", "Recent"]
+            comp_stats[ticker] = temp
+      
+        analyst_info_dic={}
+        for ticker in comp_list:
+            temp = yf.get_analysts_info(ticker)
+            temp = temp['Growth Estimates'][ticker.upper()][4]
+            analyst_info_dic[ticker] = temp
+        analyst_info_dic
+      
+        comp_tab2=[]
+        sum4=0;sum5=0
+        for i in range(len(comp_list)):
+          temp=comp_stats[comp_list[i]]["Recent"]
+          temp3=yf.get_quote_table(comp_list[i])
+          temp2=[]
+          temp2.append(comp_list[i])
+          temp2.append(temp3["Quote Price"])
+          temp2.append(temp[0])
+          temp2.append(temp[1])
+          temp2.append(temp3['PE Ratio (TTM)'])
+          temp2.append(float(analyst_info_dic[comp_list[i]][:-1]))
+          comp_tab2.append(temp2)
+          sum4+=float(temp3['PE Ratio (TTM)'])
+          sum5+=float(analyst_info_dic[comp_list[i]][:-1])
+        temp4=[]
+        temp4.append("")
+        temp4.append("")
+        temp4.append("")
+        temp4.append("mean")
+        temp4.append(sum4/len(comp_list))
+        temp4.append(sum5/len(comp_list))
+        comp_tab2.append(temp4)
+      
+        df3 = pd.DataFrame(comp_tab2,
+                         columns=['Company Ticker',"Price", 'Market Cap', 'Enterprise Value','P/E','Next 5 Years (per annum)'])
+        
+        
+        df3_norm1=pp.normalize(df3[['P/E']].T)
+        df3_norm2=pp.normalize(df3[['Next 5 Years (per annum)']].T)
+      
+        df3_dist=np.zeros(len(comp_list))
+        max_val=0
+        for i in range(len(comp_list)):
+          df3_dist[i]=df3_norm1[0][i]+df3_norm2[0][i]
+      
+        list_df3_dist=list(df3_dist)
+        max_val=max(list_df3_dist)
+        ind=list_df3_dist.index(max_val)
+      
+        return df3
+      
+      @auth.route('/about')
+      def about():
+          return render_template('about.html', boolean=True)
+      
+      @auth.route('/code', methods=['GET', 'POST'])
+      def code():
+          return render_template('code.html', boolean=True)
+      
+      
+      @auth.route("/info" , methods=['GET', 'POST'])
+      def info():
+          select = str(request.form.get('selector'))
+          df = None
+          if(select == "restaurants"):
+              df = CompAnalysis(select)
+          elif(select == "bb"):
+              df = "bbb"
+          elif(select == "cc"):
+              df = "ccc"
+          elif(select == "dd"):
+              df = "ddd"
+          elif(select == "ee"):
+              df = "eee"
+          elif(select == "ff"):
+              df = "fff"
+          elif(select == "gg"):
+              df = "ggg"
+          else:
+              df = "ELSE"
+      
+          return render_template('info.html', companies = df) # just to see what select is
+    </code>
+
+    <h3>__init__.py</h3>
+    <code>
+      from os import path
+      from flask import Flask
+      
+      def create_app():
+          app = Flask(__name__)
+      
+          from .views import views
+          from .auth import auth
+      
+          app.register_blueprint(views, url_prefix='/')
+          app.register_blueprint(auth, url_prefix='/')
+      
+          return app      
+    </code>
+</body>
+{% endblock %}
